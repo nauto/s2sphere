@@ -11,10 +11,15 @@ zip -r /tmp/s2sphere.zip __init__.py
 
 aws s3 cp /tmp/s2sphere.zip s3://nauto-dw/test/
 
-psql -h redshift.test.nauto.systems -p 5439 --dbname=nauto -U etl <<EOF
+P=10.210.250.18
+T=redshift.test.nauto.systems
+S=10.203.13.143
+IP=$S
+psql -h $IP -p 5439 --dbname=nauto -U etl <<EOF
 
 CREATE OR REPLACE LIBRARY s2sphere LANGUAGE plpythonu FROM 's3://nauto-dw/test/s2sphere.zip' 
 CREDENTIALS 'aws_access_key_id=$aws_access_key_id;aws_secret_access_key=$aws_secret_access_key';
 EOF
 
-psql -h redshift.test.nauto.systems -p 5439 --dbname=nauto -U etl -f functions.sql
+psql -h $IP -p 5439 --dbname=nauto -U etl -f functions.sql
+psql -h $IP -p 5439 --dbname=nauto -U etl -f tests.sql
